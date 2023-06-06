@@ -1,0 +1,47 @@
+import streamlit
+import requests
+from bs4 import BeautifulSoup
+
+# Função para fazer a requisição HTTP
+def fazer_requisicao(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Lançar exceção em caso de erro na requisição
+        return response.content
+    except requests.exceptions.RequestException as e:
+        print("Erro na requisição HTTP:", e)
+        return None
+
+# Função para extrair os dados desejados do HTML
+def extrair_dados(html):
+    if html is None:
+        return None
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Exemplo: Extrair o título da página
+    title = soup.title.text
+
+    # Exemplo: Extrair todos os links da página
+    links = soup.find_all("a")
+    links_list = [link.get("href") for link in links]
+
+    return title, links_list
+
+# URL do site alvo
+url = "https://www.cnnbrasil.com.br/internacional/russia-diz-ter-impedido-outra-grande-ofensiva-ucraniana-em-donetsk/"
+
+# Fazer a requisição HTTP
+html_content = fazer_requisicao(url)
+
+# Extrair os dados desejados do HTML
+title, links = extrair_dados(html_content)
+
+# Imprimir os resultados
+if title is not None:
+    print("Título da página:", title)
+
+if links is not None:
+    print("Links encontrados:")
+    for link in links:
+        print(link)
